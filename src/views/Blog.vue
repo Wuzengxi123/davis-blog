@@ -6,11 +6,19 @@
         title="博客详情"
         left-arrow
         @click-left="$router.back()"
-      />
+      >
+        <template #right>
+          <van-icon 
+            name="edit" 
+            size="18" 
+            @click="$router.push(`/blog/edit/${article?.id}`)" 
+          />
+        </template>
+      </van-nav-bar>
     </div>
 
     <!-- 文章内容区域 -->
-    <div class="blog-content" v-if="article" ref="blogContent" @scroll="onScroll">
+    <div class="blog-content" v-if="article" ref="blogContent">
       <div class="article-header">
         <h1 class="title">{{ article.title }}</h1>
         <div class="meta">
@@ -39,8 +47,10 @@
         <p v-html="article.content"></p>
       </div>
 
+      <!-- 文章底部 -->
       <div class="article-footer">
-        <div class="tags">
+        <!-- 标签列表 -->
+        <div class="tags" v-if="article.tags?.length">
           <van-tag
             v-for="tag in article.tags"
             :key="tag"
@@ -49,16 +59,12 @@
             class="tag"
           >{{ tag }}</van-tag>
         </div>
-        <div class="stats">
-          <van-icon name="like-o" /> {{ article.likes }}
-          <van-icon name="comment-o" /> {{ article.comments }}
-        </div>
-      </div>
 
-      <!-- 底部加载提示 -->
-      <div class="loading-tips">
-        <van-loading v-if="isLoading" size="16px" vertical>加载中...</van-loading>
-        <span v-else-if="!hasMore" class="no-more">- 已经到底啦 -</span>
+        <!-- 互动统计 -->
+        <div class="stats">
+          <van-icon name="like-o" /> {{ article.likes || 0 }}
+          <van-icon name="comment-o" /> {{ article.comments || 0 }}
+        </div>
       </div>
     </div>
 
@@ -71,40 +77,25 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { showToast } from 'vant'
-import { articles } from '../data/blog'
 
 const route = useRoute()
+const router = useRouter()
 const article = ref(null)
-const isLoading = ref(false)
-const hasMore = ref(true)
 const blogContent = ref(null)
 
 const fetchArticleDetail = () => {
-  const id = parseInt(route.params.id)
-  article.value = articles.find(item => item.id === id)
+  // 从 Home.vue 中获取文章列表
+  const articles = JSON.parse(localStorage.getItem('articles') || '[]')
+  const id = route.params.id
+  // 确保进行数字类型比较
+  article.value = articles.find(item => String(item.id) === id)
   
   if (!article.value) {
     showToast('文章不存在')
+    router.back()
   }
-}
-
-const onScroll = () => {
-  if (!hasMore.value || isLoading.value) return
-  const content = blogContent.value
-  if (!content) return
-  
-  const scrollBottom = content.scrollHeight - content.scrollTop - content.clientHeight
-  if (scrollBottom < 50) loadMore()
-}
-
-const loadMore = async () => {
-  if (!hasMore.value || isLoading.value) return
-  isLoading.value = true
-  await new Promise(resolve => setTimeout(resolve, 1500))
-  hasMore.value = false
-  isLoading.value = false
 }
 
 onMounted(() => {
@@ -124,83 +115,65 @@ onMounted(() => {
   background-color: #fff;
 }
 
-/* 隐藏滚动条但保持可滚动 */
 .blog-content {
   flex: 1;
   overflow-y: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   -webkit-overflow-scrolling: touch;
 }
 
-/* 隐藏 Webkit 浏览器的滚动条 */
 .blog-content::-webkit-scrollbar {
   display: none;
-}
-
-/* 固定头部区域 */
-.blog-header {
-  position: relative;
-  z-index: 99;
-  background: #fff;
-}
-
-:deep(.van-nav-bar) {
-  position: relative;
-  z-index: 999;
-}
-
-/* 固定分类标签 */
-:deep(.van-tabs__wrap) {
-  /* position: fixed !important; */
-  top: 46px !important;
-  left: 0;
-  right: 0;
-  z-index: 98;
-  background: #fff;
 }
 
 .article-header {
   padding: 20px 16px;
   background: #fff;
-  margin-bottom: 16px;
 }
 
 .title {
   font-size: 24px;
   font-weight: bold;
+  color: #323233;
+  line-height: 1.4;
   margin-bottom: 16px;
 }
 
 .meta {
   display: flex;
   align-items: center;
-  color: #666;
-  font-size: 14px;
   gap: 16px;
+  color: #969799;
+  font-size: 14px;
+  margin-bottom: 16px;
 }
 
-.content {
-  line-height: 1.6;
-  color: #333;
+.author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* 移除sticky相关样式 */
-:deep(.van-sticky) {
-  position: static !important;
-  top: auto !important;
+.category {
+  background-color: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
 }
 
-/* :deep(.van-sticky--fixed) {
-  position: relative !important;
+.cover {
+  margin: 16px -16px;
+  height: 200px;
+  overflow: hidden;
 }
 
-.van-sticky--fixed {
-  position: relative !important;
-} */
+.cover .van-image {
+  width: 100%;
+  height: 100%;
+}
 
 .article-body {
-  padding: 0 16px;
+  padding: 16px;
   font-size: 16px;
   line-height: 1.8;
   color: #323233;
@@ -213,7 +186,7 @@ onMounted(() => {
 
 .article-footer {
   margin-top: 32px;
-  padding-top: 16px;
+  padding: 16px;
   border-top: 1px solid #ebedf0;
 }
 
@@ -240,22 +213,5 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   min-height: 300px;
-}
-
-.loading-tips {
-  padding: 16px;
-  text-align: center;
-  margin-top: auto;
-  color: #969799;
-}
-
-.no-more {
-  font-size: 14px;
-}
-
-/* 内容区域自然撑开 */
-.blog-content > * {
-  width: 100%;
-  box-sizing: border-box;
 }
 </style>

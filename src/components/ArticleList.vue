@@ -7,42 +7,36 @@
         finished-text="没有更多了"
         @load="onLoad"
       >
-        <div
-          v-for="article in articles"
-          :key="article.id"
+        <div 
+          v-for="article in articles" 
+          :key="article.id" 
           class="article-card"
-          @click="onArticleClick(article)"
+          @click="goToDetail(article.id)"
         >
-          <van-image
-            :src="article.cover"
-            class="article-cover"
-            fit="cover"
-            radius="4"
-          />
           <div class="article-content">
-            <h3 class="article-title">{{ article.title }}</h3>
-            <p class="article-summary">{{ article.summary }}</p>
-            <div class="article-meta">
-              <span class="meta-item">
-                <van-icon name="clock-o" />
-                {{ article.date }}
+            <h3 class="title">{{ article.title }}</h3>
+            <p class="summary">{{ article.content.slice(0, 100) }}...</p>
+            <div class="meta">
+              <span class="author">
+                <van-image
+                  round
+                  width="20"
+                  height="20"
+                  :src="article.author.avatar"
+                />
+                {{ article.author.name }}
               </span>
-              <span class="meta-item">
-                <van-icon name="like-o" />
-                {{ article.likes }}
-              </span>
-              <span class="meta-item">
-                <van-icon name="comment-o" />
-                {{ article.comments }}
-              </span>
-              <van-tag 
-                :type="getTagType(article.category)"
-                size="medium"
-                plain
-              >
-                {{ article.category }}
-              </van-tag>
+              <span class="date">{{ article.date }}</span>
+              <span class="category">{{ article.category }}</span>
             </div>
+          </div>
+          <div class="article-cover" v-if="article.cover">
+            <van-image
+              width="120"
+              height="80"
+              fit="cover"
+              :src="article.cover"
+            />
           </div>
         </div>
       </van-list>
@@ -58,13 +52,11 @@ import { showToast } from 'vant'
 const props = defineProps({
   articles: {
     type: Array,
-    required: true
+    default: () => []
   }
 })
 
 const router = useRouter()
-
-// 列表状态
 const loading = ref(false)
 const finished = ref(true)
 const refreshing = ref(false)
@@ -77,26 +69,15 @@ const onRefresh = () => {
   }, 1000)
 }
 
+// 跳转到文章详情页
+const goToDetail = (id) => {
+  router.push(`/blog/${id}`)
+}
+
+// 加载更多
 const onLoad = () => {
   loading.value = false
-}
-
-// 文章点击事件
-const onArticleClick = (article) => {
-  router.push({
-    name: 'blog',
-    params: { id: article.id }
-  })
-}
-
-// 根据分类获取标签类型
-const getTagType = (category) => {
-  const types = {
-    '技术': 'primary',
-    '生活': 'success',
-    '随笔': 'warning'
-  }
-  return types[category] || 'default'
+  finished.value = true
 }
 </script>
 
@@ -106,64 +87,90 @@ const getTagType = (category) => {
 }
 
 .article-card {
+  display: flex;
+  padding: 16px;
+  margin-bottom: 16px;
   background: #fff;
   border-radius: 8px;
-  margin-bottom: 16px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(100, 101, 102, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.article-cover {
-  width: 100%;
-  height: 200px;
+.article-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .article-content {
-  padding: 12px;
-}
-
-.article-title {
-  margin: 0;
-  font-size: 18px;
-  font-weight: bold;
-  color: #323233;
-  line-height: 1.4;
-}
-
-.article-summary {
-  margin: 8px 0;
-  font-size: 14px;
-  color: #666;
-  line-height: 1.6;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  flex: 1;
+  margin-right: 16px;
   overflow: hidden;
 }
 
-.article-meta {
+.title {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0 0 8px;
+  color: #323233;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.summary {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 12px;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.meta {
   display: flex;
   align-items: center;
   font-size: 12px;
-  color: #999;
+  color: #969799;
 }
 
-.meta-item {
+.author {
   display: flex;
   align-items: center;
   margin-right: 16px;
 }
 
-.meta-item .van-icon {
+.author .van-image {
   margin-right: 4px;
-  font-size: 14px;
 }
 
-:deep(.van-tag) {
-  margin-left: auto;
+.date {
+  margin-right: 16px;
 }
 
-:deep(.van-image) {
-  display: block;
+.category {
+  background-color: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.article-cover {
+  flex-shrink: 0;
+  width: 120px;
+  height: 80px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.article-cover .van-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>

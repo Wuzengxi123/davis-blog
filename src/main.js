@@ -3,6 +3,8 @@ import 'vant/lib/index.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { initStorage } from './services/storage'
+import { articles as initialArticles } from './data/blog'
 import {
   Button,
   NavBar,
@@ -27,6 +29,9 @@ import './mock/blog'
 
 import App from './App.vue'
 import router from './router'
+
+// 初始化本地存储
+initStorage(initialArticles)
 
 const app = createApp(App)
 
