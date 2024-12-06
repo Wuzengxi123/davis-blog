@@ -103,6 +103,96 @@ export const articles = [
       name: '王小明',
       avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop'
     }
+  },
+  {
+    id: 4,
+    title: 'React Hooks 深入浅出',
+    category: '技术',
+    cover: landscapeImages[3] + '?w=800&h=400&fit=crop',
+    summary: '深入理解React Hooks的原理和最佳实践，提升组件开发效率。',
+    content: `
+      React Hooks的出现彻底改变了React组件的开发方式。本文将深入探讨Hooks的使用技巧：
+
+      1. useState和useEffect的正确使用
+      理解状态管理和副作用处理的核心概念。
+
+      2. 自定义Hooks的开发
+      如何封装和复用组件逻辑，提高代码复用性。
+
+      3. 性能优化
+      使用useMemo和useCallback优化组件性能。
+
+      4. 常见陷阱和解决方案
+      探讨使用Hooks时的常见问题和解决办法。
+    `,
+    date: '2024-01-03',
+    likes: 287,
+    comments: 42,
+    tags: ['React', 'Hooks', 'JavaScript'],
+    author: {
+      name: '陈开发',
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop'
+    }
+  },
+  {
+    id: 5,
+    title: '漫谈工程师成长之路',
+    category: '随笔',
+    cover: landscapeImages[4] + '?w=800&h=400&fit=crop',
+    summary: '分享一个前端工程师的成长历程，探讨技术人员的职业发展。',
+    content: `
+      作为一名前端工程师，回顾这些年的成长历程，有很多感悟想要分享：
+
+      1. 技术广度vs深度
+      在前端领域，如何平衡技术的广度和深度？
+
+      2. 软技能的重要性
+      除了技术能力，沟通和协作能力同样重要。
+
+      3. 持续学习
+      在技术快速迭代的今天，如何保持学习的动力和效率。
+
+      4. 职业规划
+      技术专家还是管理岗位？如何规划自己的职业道路。
+    `,
+    date: '2024-01-01',
+    likes: 342,
+    comments: 56,
+    tags: ['职业发展', '经验分享', '技术成长'],
+    author: {
+      name: '张工',
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop'
+    }
+  },
+  {
+    id: 6,
+    title: 'TypeScript高级特性详解',
+    category: '技术',
+    cover: landscapeImages[5] + '?w=800&h=400&fit=crop',
+    summary: '深入探讨TypeScript的高级类型系统和实战应用技巧。',
+    content: `
+      TypeScript的类型系统非常强大，本文将介绍一些高级特性的使用方法：
+
+      1. 泛型的高级用法
+      理解泛型约束、条件类型等概念。
+
+      2. 装饰器模式
+      使用装饰器优化代码结构。
+
+      3. 类型体操
+      探索类型系统的极限，理解复杂类型的构造方法。
+
+      4. 工程实践
+      在大型项目中如何组织和管理类型定义。
+    `,
+    date: '2023-12-28',
+    likes: 245,
+    comments: 38,
+    tags: ['TypeScript', '前端开发', '编程语言'],
+    author: {
+      name: '李泽',
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop'
+    }
   }
 ]
 
